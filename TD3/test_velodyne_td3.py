@@ -37,9 +37,7 @@ class TD3(object):
 
     def load(self, filename, directory):
         # Function to load network parameters
-        self.actor.load_state_dict(
-            torch.load("%s/%s_actor.pth" % (directory, filename))
-        )
+        self.actor.load_state_dict(torch.load("%s/%s_actor.pth" % (directory, filename)))
 
 
 # Set the parameters for the implementation
@@ -52,7 +50,7 @@ file_name = "TD3_velodyne"  # name of the file to load the policy from
 # Create the testing environment
 environment_dim = 20
 robot_dim = 4
-env = GazeboEnv("multi_robot_scenario.launch", environment_dim)
+env = GazeboEnv("multi_robot_scenario_test.launch", environment_dim)
 time.sleep(5)
 torch.manual_seed(seed)
 np.random.seed(seed)
@@ -62,7 +60,7 @@ action_dim = 2
 # Create the network
 network = TD3(state_dim, action_dim)
 try:
-    network.load(file_name, "./pytorch_models")
+    network.load(file_name, "/home/ubuntu/Code/DRL-robot-navigation/TD3/pytorch_models")
 except:
     raise ValueError("Could not load the stored model parameters")
 
