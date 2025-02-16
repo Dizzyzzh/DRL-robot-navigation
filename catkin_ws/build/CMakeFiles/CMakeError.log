@@ -1,22 +1,22 @@
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_f7672/fast"
-/usr/bin/make -f CMakeFiles/cmTC_f7672.dir/build.make CMakeFiles/cmTC_f7672.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_da189/fast"
+/usr/bin/make -f CMakeFiles/cmTC_da189.dir/build.make CMakeFiles/cmTC_da189.dir/build
 make[1]: 进入目录“/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp”
-Building C object CMakeFiles/cmTC_f7672.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -o CMakeFiles/cmTC_f7672.dir/CheckSymbolExists.c.o   -c /home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_f7672
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f7672.dir/link.txt --verbose=1
-/usr/bin/cc      -rdynamic CMakeFiles/cmTC_f7672.dir/CheckSymbolExists.c.o  -o cmTC_f7672 
-CMakeFiles/cmTC_f7672.dir/CheckSymbolExists.c.o：在函数‘main’中：
+Building C object CMakeFiles/cmTC_da189.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_da189.dir/CheckSymbolExists.c.o   -c /home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_da189
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_da189.dir/link.txt --verbose=1
+/usr/bin/cc      -rdynamic CMakeFiles/cmTC_da189.dir/CheckSymbolExists.c.o  -o cmTC_da189 
+CMakeFiles/cmTC_da189.dir/CheckSymbolExists.c.o：在函数‘main’中：
 CheckSymbolExists.c:(.text+0x1b)：对‘pthread_create’未定义的引用
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_f7672.dir/build.make:97: recipe for target 'cmTC_f7672' failed
-make[1]: *** [cmTC_f7672] Error 1
+CMakeFiles/cmTC_da189.dir/build.make:97: recipe for target 'cmTC_da189' failed
+make[1]: *** [cmTC_da189] Error 1
 make[1]: 离开目录“/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp”
-Makefile:126: recipe for target 'cmTC_f7672/fast' failed
-make: *** [cmTC_f7672/fast] Error 2
+Makefile:126: recipe for target 'cmTC_da189/fast' failed
+make: *** [cmTC_da189/fast] Error 2
 
 File /home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
@@ -36,20 +36,20 @@ int main(int argc, char** argv)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_f2770/fast"
-/usr/bin/make -f CMakeFiles/cmTC_f2770.dir/build.make CMakeFiles/cmTC_f2770.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_76522/fast"
+/usr/bin/make -f CMakeFiles/cmTC_76522.dir/build.make CMakeFiles/cmTC_76522.dir/build
 make[1]: 进入目录“/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp”
-Building C object CMakeFiles/cmTC_f2770.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_f2770.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
-Linking C executable cmTC_f2770
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f2770.dir/link.txt --verbose=1
-/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_f2770.dir/CheckFunctionExists.c.o  -o cmTC_f2770 -lpthreads 
+Building C object CMakeFiles/cmTC_76522.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_76522.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
+Linking C executable cmTC_76522
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_76522.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_76522.dir/CheckFunctionExists.c.o  -o cmTC_76522 -lpthreads 
 /usr/bin/ld: 找不到 -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_f2770.dir/build.make:97: recipe for target 'cmTC_f2770' failed
-make[1]: *** [cmTC_f2770] Error 1
+CMakeFiles/cmTC_76522.dir/build.make:97: recipe for target 'cmTC_76522' failed
+make[1]: *** [cmTC_76522] Error 1
 make[1]: 离开目录“/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/CMakeFiles/CMakeTmp”
-Makefile:126: recipe for target 'cmTC_f2770/fast' failed
-make: *** [cmTC_f2770/fast] Error 2
+Makefile:126: recipe for target 'cmTC_76522/fast' failed
+make: *** [cmTC_76522/fast] Error 2
 
 

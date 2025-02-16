@@ -7,5 +7,6 @@
 subdirs("gtest")
 subdirs("velodyne_simulator/velodyne_description")
 subdirs("velodyne_simulator/velodyne_simulator")
+subdirs("senior_akm_robot")
 subdirs("velodyne_simulator/velodyne_gazebo_plugins")
 subdirs("multi_robot_scenario")

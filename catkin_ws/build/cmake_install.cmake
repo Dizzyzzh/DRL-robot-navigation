@@ -133,6 +133,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/gtest/cmake_install.cmake")
   include("/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/velodyne_simulator/velodyne_description/cmake_install.cmake")
   include("/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/velodyne_simulator/velodyne_simulator/cmake_install.cmake")
+  include("/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/senior_akm_robot/cmake_install.cmake")
   include("/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/velodyne_simulator/velodyne_gazebo_plugins/cmake_install.cmake")
   include("/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/multi_robot_scenario/cmake_install.cmake")
 
