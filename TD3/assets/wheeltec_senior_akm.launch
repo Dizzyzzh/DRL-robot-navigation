@@ -1,15 +1,4 @@
 <launch>
-    <!-- Gazebo  -->
-    <include file="$(find multi_robot_scenario)/launch/empty_world.launch">
-        <arg name="gui" value="true" />
-    </include>
-
-    <!-- Robot with diff drive -->
-    <include file="$(find senior_akm_robot)/launch/gazebo.launch">
-    </include>
-
-    <!-- RVIZ -->
-    <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find
-    multi_robot_scenario)/launch/pioneer3dx.rviz" /> -->
+    <include file="$(find senior_akm_robot)/launch/wheeltec_gazebo_control.launch" />
 
 </launch>

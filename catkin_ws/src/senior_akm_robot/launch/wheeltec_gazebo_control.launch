@@ -3,7 +3,7 @@
     <!-- load the controllers -->
     <node name="controller_manager" pkg="controller_manager" type="spawner" respawn="false"
         output="screen" ns="wheeltec"
-        args="senior_akm_left_wheel_velocity_controller  senior_akm_right_wheel_velocity_controller  senior_akm_left_steering_hinge_position_controller  senior_akm_right_steering_hinge_position_controller  senior_akm_joint_state_controller" />
+        args="senior_akm_left_wheel_velocity_controller  senior_akm_right_wheel_velocity_controller  senior_akm_left_steering_hinge_position_controller  senior_akm_right_steering_hinge_position_controller  senior_akm_joint_state_controller senior_akm_left_front_wheel_velocity_controller senior_akm_right_front_wheel_velocity_controller" />
     <!-- load controller yaml-->
     <rosparam file="$(find senior_akm_robot)/config/wheeltec_control_senior_akm.yaml" command="load" />
 
@@ -11,8 +11,13 @@
     command-->
     <node pkg="senior_akm_robot" type="Sub_cmd_vel_senior_akm.py" name="sub_senior_akm_cmd" output="screen" />
     <!--订阅话题推出机器人运动状态-->
-    <node pkg="senior_akm_robot" type="real_cmd_vel_senior_akm.py" name="pub_senior_akm_cmd" output="screen" />
+    <!-- <node pkg="senior_akm_robot" type="real_cmd_vel_senior_akm.py" name="pub_senior_akm_cmd" output="screen" /> -->
+    <!--转化2D点云数据-->
+    <node pkg="senior_akm_robot" type="LaserScan_to_PointCloud.py" name="laser_scan_to_point_cloud" output="screen" />
+    <!-- 发布odom -->
+    <node pkg="senior_akm_robot" type="gazebo_odometry.py" name="gazebo_odometry" output="screen" />
 
+    <!-- <node pkg="senior_akm_robot" type="test.py" name="test" output="screen" /> -->
 
     <!-- 在gazebo中创建robot -->
     <include file="$(find senior_akm_robot)/launch/wheeltec_robot_gazebo.launch" />

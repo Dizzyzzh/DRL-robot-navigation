@@ -52,3 +52,15 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/senior_akm_robot" TYPE FILE FILES "/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/src/senior_akm_robot/package.xml")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/senior_akm_robot" TYPE PROGRAM FILES "/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/senior_akm_robot/catkin_generated/installspace/Sub_cmd_vel_senior_akm.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/senior_akm_robot" TYPE PROGRAM FILES "/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/senior_akm_robot/catkin_generated/installspace/real_cmd_vel_senior_akm.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/senior_akm_robot" TYPE PROGRAM FILES "/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build/senior_akm_robot/catkin_generated/installspace/LaserScan_to_PointCloud.py")
+endif()
+

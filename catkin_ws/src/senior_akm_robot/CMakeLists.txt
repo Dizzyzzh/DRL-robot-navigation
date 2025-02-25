@@ -162,6 +162,9 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/Sub_cmd_vel_senior_akm.py
   scripts/real_cmd_vel_senior_akm.py
+  scripts/LaserScan_to_PointCloud.py
+  scripts/gazebo_odometry.py
+  scripts/test.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

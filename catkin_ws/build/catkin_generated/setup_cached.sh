@@ -7,6 +7,5 @@
 # new environment variables
 
 # modified environment variables
-export LD_LIBRARY_PATH='/opt/ros/melodic/lib'
-export PKG_CONFIG_PATH='/opt/ros/melodic/lib/pkgconfig'
+export PATH='/opt/ros/melodic/bin:/home/ubuntu/anaconda3/envs/DRL/bin:/home/ubuntu/anaconda3/envs/DRL/bin:/home/ubuntu/anaconda3/condabin:/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ubuntu/.local/bin:/home/ubuntu/.local/bin'
 export PWD='/home/ubuntu/Code/DRL-robot-navigation/catkin_ws/build'

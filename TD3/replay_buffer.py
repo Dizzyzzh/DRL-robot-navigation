@@ -2,6 +2,7 @@
 Data structure for implementing experience replay
 Author: Patrick Emami
 """
+
 import random
 from collections import deque
 
@@ -9,7 +10,7 @@ import numpy as np
 
 
 class ReplayBuffer(object):
-    def __init__(self, buffer_size, random_seed=123):
+    def __init__(self, buffer_size, random_seed=100):
         """
         The right side of the deque contains the most recent experiences
         """

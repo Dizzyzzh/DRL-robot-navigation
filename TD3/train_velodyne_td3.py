@@ -15,9 +15,9 @@ from tqdm import tqdm
 LR = 1e-4
 
 
-def evaluate(network, epoch, eval_episodes=10):
+def evaluate(network, epoch, epsilon, eval_episodes=10):
     """
-    评估当前策略的性能，计算平均奖励和碰撞率。
+    评估当前策略的性能，计算平均奖励和碰撞率
     """
     avg_reward = 0.0
     col = 0  # 碰撞计数
@@ -27,7 +27,7 @@ def evaluate(network, epoch, eval_episodes=10):
         done = False
         while not done and count < 501:
             action = network.get_action(np.array(state))  # 获取当前策略的动作
-            a_in = [(action[0] + 1) / 2, action[1]]  # 归一化动作
+            a_in = [action[0], action[1]]
             state, reward, done, _ = env.step(a_in)  # 执行动作并获取反馈
             avg_reward += reward
             count += 1
@@ -36,10 +36,7 @@ def evaluate(network, epoch, eval_episodes=10):
     avg_reward /= eval_episodes
     avg_col = col / eval_episodes
     print("..............................................")
-    print(
-        "Average Reward over %i Evaluation Episodes, Epoch:%i, avg_reward:%f, avg_col:%f"
-        % (eval_episodes, epoch, avg_reward, avg_col)
-    )
+    print("Average Reward over %i Evaluation Episodes, Epoch:%i, avg_reward:%f, avg_col:%f, epsilon:%f" % (eval_episodes, epoch, avg_reward, avg_col, epsilon))
     print("..............................................")
     return avg_reward
 
@@ -143,9 +140,7 @@ class TD3(object):
         av_loss = 0
 
         for it in range(iterations):
-            batch_states, batch_actions, batch_rewards, batch_dones, batch_next_states = replay_buffer.sample_batch(
-                batch_size
-            )
+            batch_states, batch_actions, batch_rewards, batch_dones, batch_next_states = replay_buffer.sample_batch(batch_size)
             state = torch.Tensor(batch_states).to(device)
             next_state = torch.Tensor(batch_next_states).to(device)
             action = torch.Tensor(batch_actions).to(device)
@@ -193,9 +188,6 @@ class TD3(object):
         self.writer.add_scalar("Max. Q", max_Q, self.iter_count)
 
     def save(self, filename, directory):
-        """
-        保存模型参数。
-        """
         torch.save(self.actor.state_dict(), f"{directory}/{filename}_actor.pth")
         torch.save(self.critic.state_dict(), f"{directory}/{filename}_critic.pth")
 
@@ -211,7 +203,7 @@ class TD3(object):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 设定训练超参数
-seed = 10  # 随机种子，确保实验可复现
+seed = 500  # 随机种子，确保实验可复现
 eval_freq = 5e3  # 评估间隔步数，每 5000 步进行一次评估
 max_ep = 500  # 每个 episode 的最大步数
 eval_ep = 10  # 评估时运行 10 个 episode
@@ -220,7 +212,7 @@ expl_noise = 1  # 初始探索噪声（在 [expl_min, 1] 范围内）
 expl_decay_steps = 500000  # 探索噪声衰减步数
 expl_min = 0.1  # 探索噪声的最小值
 batch_size = 40  # 训练时的小批量大小
-discount = 0.99999  # 折扣因子 γ（用于计算折扣奖励）
+discount = 0.995  # 折扣因子 γ（用于计算折扣奖励）
 tau = 0.005  # 目标网络软更新系数
 policy_noise = 0.2  # 目标动作上的噪声
 noise_clip = 0.5  # 目标动作噪声的截断范围
@@ -228,8 +220,12 @@ policy_freq = 2  # 每 2 个训练步更新一次 Actor 网络
 buffer_size = 1e6  # 经验回放缓冲区大小（最多存储 100 万条数据）
 file_name = "TD3_velodyne"  # 保存策略的文件名
 save_model = True  # 是否保存训练好的模型
-load_model = False  # 是否加载已有模型
-random_near_obstacle = True  # 是否在障碍物附近随机采取动作以增加探索性
+load_model = True  # 是否加载已有模型
+random_near_obstacle = False  # 是否在障碍物附近随机采取动作以增加探索性
+greedy = False
+epsilon_start = 1.0
+epsilon_end = 0.01
+epsilon_decay = 0.995
 
 # 创建存储网络的文件夹
 if not os.path.exists("./results"):
@@ -240,7 +236,7 @@ if save_model and not os.path.exists("./pytorch_models"):
 # 创建训练环境
 environment_dim = 20  # 观测环境的维度
 robot_dim = 4  # 机器人状态维度
-env = GazeboEnv("multi_robot_scenario.launch", environment_dim)  # 启动仿真环境
+env = GazeboEnv("wheeltec_senior_akm.launch", environment_dim)  # 启动仿真环境
 time.sleep(5)  # 等待 5 秒以确保环境稳定
 
 # 设置随机种子，保证实验可复现
@@ -261,7 +257,7 @@ replay_buffer = ReplayBuffer(buffer_size, seed)
 # 如果启用了模型加载，则尝试加载已有模型
 if load_model:
     try:
-        network.load(file_name, "./pytorch_models")
+        network.load(file_name, r"../pytorch_models")
     except:
         print("无法加载模型，使用随机初始化的网络进行训练")
 
@@ -301,7 +297,7 @@ for timestep in tqdm(range(int(max_timesteps)), unit="steps", desc="training pro
         if timesteps_since_eval >= eval_freq:
             print("正在进行评估")
             timesteps_since_eval %= eval_freq
-            evaluations.append(evaluate(network=network, epoch=epoch, eval_episodes=eval_ep))  # 评估计TD3
+            evaluations.append(evaluate(network=network, epoch=epoch, epsilon=epsilon_start, eval_episodes=eval_ep))  # 评估计TD3
             network.save(file_name, directory=f"/home/ubuntu/Code/DRL-robot-navigation/TD3/pytorch_models")  # 保存模型
             np.save(f"/home/ubuntu/Code/DRL-robot-navigation/TD3/results", evaluations)  # 存储评估数据
             epoch += 1
@@ -322,19 +318,28 @@ for timestep in tqdm(range(int(max_timesteps)), unit="steps", desc="training pro
     action = (action + np.random.normal(0, expl_noise, size=action_dim)).clip(-max_action, max_action)
 
     # **在靠近障碍物时，强制随机采取动作，增加探索性**
-    if random_near_obstacle:
-        if np.random.uniform(0, 1) > 0.85 and min(state[4:-8]) < 0.6 and count_rand_actions < 1:
-            count_rand_actions = np.random.randint(8, 15)  # 生成随机动作的持续步数
-            random_action = np.random.uniform(-1, 1, 2)  # 生成随机动作
+    # if random_near_obstacle:
+    #     if np.random.uniform(0, 1) > 0.85 and min(state[4:-8]) < 0.6 and count_rand_actions < 1:
+    #         count_rand_actions = np.random.randint(10, 20)  # 生成随机动作的持续步数
+    #         random_action = np.random.uniform(-1, 1, 2)  # 生成随机动作
+    #         random_action[0] = np.random.uniform(-0.5, 0)
 
-        if count_rand_actions > 0:
-            count_rand_actions -= 1
-            action = random_action
-            action[0] = -1  # 强制设定前进速度为 -1（可能用于后退避障）
+    #     if count_rand_actions > 0:
+    #         count_rand_actions -= 1
+    #         action = random_action
+
+    if greedy:
+        if np.random.rand() < epsilon_start:
+            action = np.random.uniform(-1, 1, 2)  # 随机动作（探索）
+            action[0] = np.random.uniform(-1, 1)
+
+        if timestep % 1000 == 0:
+            if epsilon_start > epsilon_end:
+                epsilon_start = epsilon_start * epsilon_decay
 
     # **调整动作范围**
-    # 线速度调整到 [0,1]，角速度保持 [-1,1]
-    a_in = [(action[0] + 1) / 2, action[1]]
+    # 线速度调整到 [-1,1]，角速度保持 [-1,1]
+    a_in = [action[0], action[1]]
 
     # **执行动作，获得新状态、奖励等信息**
     next_state, reward, done, target = env.step(a_in)

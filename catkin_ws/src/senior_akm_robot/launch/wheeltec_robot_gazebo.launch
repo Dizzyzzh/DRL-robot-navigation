@@ -15,12 +15,12 @@
 
     <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
     <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" respawn="false"
-        args=" -urdf -model senior_akm_robot -param robot_description $(arg robot_position)"
+        args=" -urdf -model senior_akm -param robot_description $(arg robot_position)"
         output="screen" />
 
     <!-- <arg name="model" /> -->
-    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui"
-        type="joint_state_publisher_gui" />
+    <!-- <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui"
+        type="joint_state_publisher_gui" /> -->
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
         <param name="publish_frequency" type="double" value="50.0" />

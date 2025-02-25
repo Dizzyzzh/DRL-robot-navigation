@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot name="wheeltec" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <gazebo>
+        <plugin name="gazebo_ros_contact" filename="libgazebo_ros_contact.so">
+            <topic>/contact_info</topic>
+            <body_name>base_footprint</body_name>
+            <contact_sensor>true</contact_sensor>
+        </plugin>
+    </gazebo>
+</robot>

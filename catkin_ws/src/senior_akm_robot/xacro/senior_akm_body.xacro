@@ -23,7 +23,7 @@
     </xacro:macro>
 
     <!-- define base_footprint -->
-    <link name="base_footprint" />
+    <link name="base_footprint"></link>
 
     <!-- define fixed base_footprint_joint -->
     <joint

@@ -20,6 +20,8 @@ from visualization_msgs.msg import MarkerArray
 GOAL_REACHED_DIST = 0.3
 COLLISION_DIST = 0.35
 TIME_DELTA = 0.1
+LIDAR2ORIGIN_DISTANCE = 0.0887
+MAX_PENALTY = 1
 
 
 # 检查目标位置是否位于障碍物上
@@ -66,7 +68,7 @@ class GazeboEnv:
     """Superclass for all Gazebo environments."""
 
     def __init__(self, launchfile, environment_dim):
-        self.environment_dim = environment_dim  # 传感器数据维度(激光雷达的分辨率)
+        self.environment_dim = environment_dim  # 数据维度
         self.odom_y = 0
 
         self.goal_x = 1
@@ -78,8 +80,10 @@ class GazeboEnv:
         self.velodyne_data = np.ones(self.environment_dim) * 10
         self.last_odom = None
 
+        self.done = False
+
         self.set_self_state = ModelState()
-        self.set_self_state.model_name = "r1"
+        self.set_self_state.model_name = "senior_akm"
         self.set_self_state.pose.position.x = 0.0
         self.set_self_state.pose.position.y = 0.0
         self.set_self_state.pose.position.z = 0.0
@@ -88,11 +92,11 @@ class GazeboEnv:
         self.set_self_state.pose.orientation.z = 0.0
         self.set_self_state.pose.orientation.w = 1.0
 
-        # 生成一系列角度区间 (self.gaps)，用于划分传感器数据的视角范围
-        # 将 -90° 到 90° 的范围划分成 environment_dim 份，每份的宽度是 π / environment_dim
-        self.gaps = [[-np.pi / 2 - 0.03, -np.pi / 2 + np.pi / self.environment_dim]]
+        # 生成一系列角度区间 (self.gaps)
+        # 将 -150° 到 150° 的范围划分成 environment_dim 份，每份的宽度是 π * 4 /  3 / environment_dim
+        self.gaps = [[-np.pi / 1.2 - 0.03, -np.pi / 1.2 + np.pi * 4 / 3 / self.environment_dim]]
         for m in range(self.environment_dim - 1):
-            self.gaps.append([self.gaps[m][1], self.gaps[m][1] + np.pi / self.environment_dim])
+            self.gaps.append([self.gaps[m][1], self.gaps[m][1] + np.pi * 4 / 3 / self.environment_dim])
         self.gaps[-1][-1] += 0.03
 
         port = "11311"
@@ -121,7 +125,7 @@ class GazeboEnv:
 
         # 设定 ROS 发布者（用于发布控制命令、状态信息等）
         # 机器人速度控制命令发布器
-        self.vel_pub = rospy.Publisher("/r1/cmd_vel", Twist, queue_size=1)
+        self.vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
         # 设置 Gazebo 机器人状态的发布器
         self.set_state = rospy.Publisher("gazebo/set_model_state", ModelState, queue_size=10)
         # 控制 Gazebo 物理仿真的服务
@@ -135,9 +139,9 @@ class GazeboEnv:
 
         # 设定 ROS 订阅者（用于接收传感器数据、机器人状态等）
         # 订阅 Velodyne 激光雷达点云数据
-        self.velodyne = rospy.Subscriber("/velodyne_points", PointCloud2, self.velodyne_callback, queue_size=1)
+        self.velodyne = rospy.Subscriber("/point_cloud", PointCloud2, self.velodyne_callback, queue_size=1)
         # 订阅 机器人 里程计数据
-        self.odom = rospy.Subscriber("/r1/odom", Odometry, self.odom_callback, queue_size=1)
+        self.odom = rospy.Subscriber("/odom", Odometry, self.odom_callback, queue_size=1)
 
     def odom_callback(self, od_data):
         self.last_odom = od_data
@@ -159,16 +163,21 @@ class GazeboEnv:
                 dot = data[i][0] * 1 + data[i][1] * 0
 
                 # 计算该点到原点的距离（即该点的模长）
-                mag1 = math.sqrt(math.pow(data[i][0], 2) + math.pow(data[i][1], 2))
+                mag1 = math.sqrt(math.pow(data[i][0] + LIDAR2ORIGIN_DISTANCE, 2) + math.pow(data[i][1], 2))
 
                 # mag2 是 X 轴方向向量 (1, 0) 的模长，始终等于 1
                 mag2 = math.sqrt(math.pow(1, 2) + math.pow(0, 2))
 
-                # 计算该点与 X 轴的夹角 beta，np.sign(data[i][1]) 用于确定角度方向
-                beta = math.acos(dot / (mag1 * mag2)) * np.sign(data[i][1])
+                try:
+                    # 计算该点与 X 轴的夹角 beta，np.sign(data[i][1]) 用于确定角度方向
+                    beta = math.acos(dot / (mag1 * mag2)) * np.sign(data[i][1])
+                except ValueError:
+                    self.done = True
+                    break
 
                 # 计算点到原点的欧几里得距离
-                dist = math.sqrt(data[i][0] ** 2 + data[i][1] ** 2 + data[i][2] ** 2)
+                # dist = math.sqrt(data[i][0] ** 2 + data[i][1] ** 2 + data[i][2] ** 2)
+                dist = math.sqrt((data[i][0] + LIDAR2ORIGIN_DISTANCE) ** 2 + data[i][1] ** 2)
 
                 # 遍历角度区间（self.gaps 存储角度范围的分区，例如 [-π, -π/2], [-π/2, 0] 等）
                 for j in range(len(self.gaps)):
@@ -207,6 +216,9 @@ class GazeboEnv:
 
         # 读取激光雷达数据，并检测是否发生碰撞
         done, collision, min_laser = self.observe_collision(self.velodyne_data)
+        if self.done:
+            done = True
+            collision = True
         v_state = self.velodyne_data[:]  # 复制激光雷达数据，避免修改原数据
         laser_state = [v_state]
 
@@ -240,6 +252,7 @@ class GazeboEnv:
             beta = -beta if skew_x < 0 else 0 - beta
 
         theta = beta - angle  # 计算机器人朝向与目标方向的误差角度
+        # print("theta:", theta)
 
         # 角度归一化到 [-π, π] 范围内
         if theta > np.pi:
@@ -259,12 +272,13 @@ class GazeboEnv:
         state = np.append(laser_state, robot_state)  # 组合 LiDAR 数据与机器人状态
 
         # 计算奖励
-        reward = self.get_reward(target, collision, action, min_laser)
+        reward = self.get_reward(target, collision, action, min_laser, theta, distance)
 
         # 返回新状态、奖励、是否结束、是否到达目标
         return state, reward, done, target
 
     def reset(self):
+        self.done = False
         rospy.wait_for_service("/gazebo/reset_world")
         try:
             # 重置 Gazebo 世界
@@ -418,7 +432,7 @@ class GazeboEnv:
         marker = Marker()
 
         # 设置 Marker 的参考坐标系
-        marker.header.frame_id = "/r1/odom"
+        marker.header.frame_id = "/odom"
         marker.type = marker.CYLINDER  # 目标点用圆柱体表示
         marker.action = marker.ADD
         marker.scale.x = 0.1
@@ -445,7 +459,7 @@ class GazeboEnv:
 
         markerArray2 = MarkerArray()
         marker2 = Marker()
-        marker2.header.frame_id = "/r1/odom"
+        marker2.header.frame_id = "/odom"
         marker2.type = marker.CUBE  # 速度用方块表示
         marker2.action = marker.ADD
 
@@ -456,9 +470,9 @@ class GazeboEnv:
 
         # 红色 (R=1) 表示前进速度
         marker2.color.a = 1.0
-        marker2.color.r = 1.0
+        marker2.color.r = 0.0
         marker2.color.g = 0.0
-        marker2.color.b = 0.0
+        marker2.color.b = 1.0
 
         # 速度条的位置
         marker2.pose.orientation.w = 1.0
@@ -473,7 +487,7 @@ class GazeboEnv:
 
         markerArray3 = MarkerArray()
         marker3 = Marker()
-        marker3.header.frame_id = "/r1/odom"
+        marker3.header.frame_id = "/odom"
         marker3.type = marker.CUBE  # 角速度用方块表示
         marker3.action = marker.ADD
 
@@ -507,11 +521,18 @@ class GazeboEnv:
 
     # 计算奖励
     @staticmethod
-    def get_reward(target, collision, action, min_laser):
+    def get_reward(target, collision, action, min_laser, theta, distance):
         if target:
             return 100.0
         elif collision:
             return -100.0
         else:
+            r1 = lambda x: 0 if x < 0 else x
+            r2 = lambda x: 0 if x < 0.5 else 0.5 - x
             r3 = lambda x: 1 - x if x < 1 else 0.0
-            return action[0] / 2 - abs(action[1]) / 2 - r3(min_laser) / 2
+            # return r1(action[0]) - abs(action[1]) / 2 - r3(min_laser) / 2
+            # return abs(action[0]) / 2 - abs(action[1]) / 2 - r3(min_laser) / 2
+            return r1(action[0]) + r2(abs(theta) / math.pi) - r3(min_laser) / 2  # 效果还行
+            # return r2(abs(theta) / math.pi) - r3(min_laser) / 2
+            # return -r3(min_laser) / 2
+            # return abs(action[0]) / 2 - r3(min_laser) / 2
