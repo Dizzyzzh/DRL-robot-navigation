@@ -212,7 +212,7 @@ expl_noise = 1  # 初始探索噪声（在 [expl_min, 1] 范围内）
 expl_decay_steps = 500000  # 探索噪声衰减步数
 expl_min = 0.1  # 探索噪声的最小值
 batch_size = 40  # 训练时的小批量大小
-discount = 0.995  # 折扣因子 γ（用于计算折扣奖励）
+discount = 0.999  # 折扣因子 γ（用于计算折扣奖励）
 tau = 0.005  # 目标网络软更新系数
 policy_noise = 0.2  # 目标动作上的噪声
 noise_clip = 0.5  # 目标动作噪声的截断范围
@@ -257,7 +257,7 @@ replay_buffer = ReplayBuffer(buffer_size, seed)
 # 如果启用了模型加载，则尝试加载已有模型
 if load_model:
     try:
-        network.load(file_name, r"../pytorch_models")
+        network.load(file_name, r"/home/ubuntu/Code/DRL-robot-navigation/TD3/pytorch_models")
     except:
         print("无法加载模型，使用随机初始化的网络进行训练")
 

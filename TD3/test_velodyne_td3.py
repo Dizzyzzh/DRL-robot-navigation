@@ -42,7 +42,7 @@ class TD3(object):
 
 # Set the parameters for the implementation
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # cuda or cpu
-seed = 0  # Random seed number
+seed = 500  # Random seed number
 max_ep = 500  # maximum number of steps per episode
 file_name = "TD3_velodyne"  # name of the file to load the policy from
 
@@ -50,7 +50,7 @@ file_name = "TD3_velodyne"  # name of the file to load the policy from
 # Create the testing environment
 environment_dim = 20
 robot_dim = 4
-env = GazeboEnv("multi_robot_scenario_test.launch", environment_dim)
+env = GazeboEnv("wheeltec_senior_akm.launch", environment_dim)
 time.sleep(5)
 torch.manual_seed(seed)
 np.random.seed(seed)
@@ -73,7 +73,7 @@ while True:
     action = network.get_action(np.array(state))
 
     # Update action to fall in range [0,1] for linear velocity and [-1,1] for angular velocity
-    a_in = [(action[0] + 1) / 2, action[1]]
+    a_in = [action[0], action[1]]
     next_state, reward, done, target = env.step(a_in)
     done = 1 if episode_timesteps + 1 == max_ep else int(done)
 

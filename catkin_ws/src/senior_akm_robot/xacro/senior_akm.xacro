@@ -66,7 +66,7 @@
             <parent link="base_link" />
             <child link="${LR}_rear_wheel_link" />
             <axis xyz="0 1 0" rpy="0 0 0" />
-            <limit effort="1.0" velocity="38.70" />
+            <limit effort="1.0" velocity="28.70" />
         </joint>
     </xacro:macro>
 
@@ -85,7 +85,7 @@
             <parent link="${LR}_front_axle_carrier" />
             <child link="${LR}_front_wheel_link" />
             <axis xyz="0 1 0" rpy="0 0 0" />
-            <limit effort="1.0" velocity="38.70" />
+            <limit effort="1.0" velocity="28.70" />
         </joint>
 
         <!-- define steering_joint rotate around the z axis,Max velocity is 4.5 rad/s,Max effort 0.045 N m-->

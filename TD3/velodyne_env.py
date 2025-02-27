@@ -532,7 +532,8 @@ class GazeboEnv:
             r3 = lambda x: 1 - x if x < 1 else 0.0
             # return r1(action[0]) - abs(action[1]) / 2 - r3(min_laser) / 2
             # return abs(action[0]) / 2 - abs(action[1]) / 2 - r3(min_laser) / 2
-            return r1(action[0]) + r2(abs(theta) / math.pi) - r3(min_laser) / 2  # 效果还行
+            return action[0] * 1.5 + r2(abs(theta) / math.pi) - r3(min_laser) / 2 + r3(distance) / 2
             # return r2(abs(theta) / math.pi) - r3(min_laser) / 2
             # return -r3(min_laser) / 2
             # return abs(action[0]) / 2 - r3(min_laser) / 2
+            # return action[0] + r2(abs(theta) / math.pi) - r3(min_laser) / 2 + r3(distance) / 2 # 效果还行 5分
