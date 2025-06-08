@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find senior_akm_robot)/launch/wheeltec_gazebo_control.launch" />
+
+</launch>

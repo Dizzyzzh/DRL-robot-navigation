@@ -1,0 +1,37 @@
+<launch>
+    <!-- Gazebo -->
+    <include file="$(find multi_robot_scenario)/launch/empty_world.launch">
+        <arg name="gui" value="true" />
+    </include>
+
+    <!-- Robot-->
+    <arg name="robot_name" default="senior_akm_robot" />
+    <arg name="robot_position" default="-x -1.0 -y 5.0 -z 0.01" />
+
+    <!-- Load the URDF into the ROS Parameter Server -->
+    <!-- 调用xacro文件解析器 将对应车型的xacro文件转为urdf文件 -->
+    <!-- <arg name="model" default="$(find xacro)/xacro '$(find senior_akm_robot)/xacro/senior_akm.xacro'" />
+    <param name="robot_description" command="$(arg model)" /> -->
+    <param name="robot_description" textfile="$(find senior_akm_robot)/urdf/senior_akm.urdf" />
+
+    <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" respawn="false"
+        args=" -urdf -model senior_akm -param robot_description $(arg robot_position)"
+        output="screen" />
+
+    <!-- <arg name="model" /> -->
+    <!-- <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui"
+        type="joint_state_publisher_gui" /> -->
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0" />
+    </node>
+
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0" />
+    </node>
+
+    <!-- RVIZ -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find senior_akm_robot)/rviz/urdf.rviz" />
+
+</launch>

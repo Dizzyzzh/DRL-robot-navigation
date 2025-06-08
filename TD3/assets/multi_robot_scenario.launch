@@ -1,0 +1,21 @@
+<launch>
+
+    <!-- Gazebo  -->
+    <include file="$(find multi_robot_scenario)/launch/empty_world.launch">
+        <arg name="gui" value="false" />
+    </include>
+
+    <!-- Robot with diff drive -->
+    <include file="$(find multi_robot_scenario)/launch/pioneer3dx.gazebo.launch">
+        <arg name="robot_name" value="r1" />
+        <arg name="robot_position" value="-x 0.0 -y 0.0 -z 0.01 -R 0 -P 0 -Y +0.0" />
+    </include>
+
+    <!-- RVIZ -->
+    <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find
+    multi_robot_scenario)/launch/pioneer3dx.rviz" /> -->
+
+    <node pkg="tf" type="static_transform_publisher" name="r1_to_base_link"
+        args="0 0 0 0 0 0 /r1/base_link /base_link 10" />
+
+</launch>
