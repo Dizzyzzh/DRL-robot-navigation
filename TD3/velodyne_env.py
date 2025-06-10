@@ -17,10 +17,10 @@ from std_srvs.srv import Empty
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
 
-GOAL_REACHED_DIST = 0.3
+GOAL_REACHED_DIST = 0.4
 COLLISION_DIST = 0.35
 TIME_DELTA = 0.1
-LIDAR2ORIGIN_DISTANCE = 0.0887
+LIDAR2ORIGIN_DISTANCE = 0
 MAX_PENALTY = 1
 
 
@@ -28,34 +28,16 @@ MAX_PENALTY = 1
 def check_pos(x, y):
     goal_ok = True
 
-    if -3.8 > x > -6.2 and 6.2 > y > 3.8:
+    if -1.5 > x > -3.3 and 4.95 > y > 1.35:
         goal_ok = False
 
-    if -1.3 > x > -2.7 and 4.7 > y > -0.2:
+    if 3.1 > x > -0.2 and 3.75 > y > 0.05:
         goal_ok = False
 
-    if -0.3 > x > -4.2 and 2.7 > y > 1.3:
+    if -0.55 > x > -4.85 and -0.95 > y > -3.45:
         goal_ok = False
 
-    if -0.8 > x > -4.2 and -2.3 > y > -4.2:
-        goal_ok = False
-
-    if -1.3 > x > -3.7 and -0.8 > y > -2.7:
-        goal_ok = False
-
-    if 4.2 > x > 0.8 and -1.8 > y > -3.2:
-        goal_ok = False
-
-    if 4 > x > 2.5 and 0.7 > y > -3.2:
-        goal_ok = False
-
-    if 6.2 > x > 3.8 and -3.3 > y > -4.2:
-        goal_ok = False
-
-    if 4.2 > x > 1.3 and 3.7 > y > 1.5:
-        goal_ok = False
-
-    if -3.0 > x > -7.2 and 0.5 > y > -1.5:
+    if 3.15 > x > 0.85 and -0.55 > y > -3.25:
         goal_ok = False
 
     if x > 4.5 or x < -4.5 or y > 4.5 or y < -4.5:
@@ -93,10 +75,10 @@ class GazeboEnv:
         self.set_self_state.pose.orientation.w = 1.0
 
         # 生成一系列角度区间 (self.gaps)
-        # 将 -150° 到 150° 的范围划分成 environment_dim 份，每份的宽度是 π * 4 /  3 / environment_dim
-        self.gaps = [[-np.pi / 1.2 - 0.03, -np.pi / 1.2 + np.pi * 4 / 3 / self.environment_dim]]
+        # 将 -180° 到 180° 的范围划分成 environment_dim 份，每份的宽度是 π * 2 / environment_dim
+        self.gaps = [[-np.pi  - 0.03, -np.pi  + np.pi * 2 / self.environment_dim]]
         for m in range(self.environment_dim - 1):
-            self.gaps.append([self.gaps[m][1], self.gaps[m][1] + np.pi * 4 / 3 / self.environment_dim])
+            self.gaps.append([self.gaps[m][1], self.gaps[m][1] + np.pi *2 / self.environment_dim])
         self.gaps[-1][-1] += 0.03
 
         port = "11311"
@@ -529,11 +511,9 @@ class GazeboEnv:
         else:
             r1 = lambda x: 0 if x < 0 else x
             r2 = lambda x: 0 if x < 0.5 else 0.5 - x
-            r3 = lambda x: 1 - x if x < 1 else 0.0
+            r3 = lambda x: 0 if x < 1 else -x/2
             # return r1(action[0]) - abs(action[1]) / 2 - r3(min_laser) / 2
             # return abs(action[0]) / 2 - abs(action[1]) / 2 - r3(min_laser) / 2
-            return action[0] * 1.5 + r2(abs(theta) / math.pi) - r3(min_laser) / 2 + r3(distance) / 2
-            # return r2(abs(theta) / math.pi) - r3(min_laser) / 2
-            # return -r3(min_laser) / 2
-            # return abs(action[0]) / 2 - r3(min_laser) / 2
+            # return r1(action[0]) / 2 + r2(abs(theta) / math.pi) - r3(min_laser) / 2
             # return action[0] + r2(abs(theta) / math.pi) - r3(min_laser) / 2 + r3(distance) / 2 # 效果还行 5分
+            return abs(action[0]) / 2  - r3(min_laser) / 2 - distance / 4 # 效果还行 5分

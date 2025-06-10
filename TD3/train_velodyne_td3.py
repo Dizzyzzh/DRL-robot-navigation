@@ -230,8 +230,8 @@ epsilon_decay = 0.995
 # 创建存储网络的文件夹
 if not os.path.exists("./results"):
     os.makedirs("./results")
-if save_model and not os.path.exists("./pytorch_models"):
-    os.makedirs("./pytorch_models")
+if save_model and not os.path.exists("/home/ubuntu/Code/DRL-robot-navigation/TD3/pytorch_models"):
+    os.makedirs("/home/ubuntu/Code/DRL-robot-navigation/TD3/pytorch_models")
 
 # 创建训练环境
 environment_dim = 20  # 观测环境的维度
