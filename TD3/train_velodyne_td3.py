@@ -103,12 +103,12 @@ class TD3(object):
         self.actor = Actor(state_dim, action_dim).to(device)
         self.actor_target = Actor(state_dim, action_dim).to(device)
         self.actor_target.load_state_dict(self.actor.state_dict())
-        self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=LR)
+        self.actor_optimizer = torch.optim.Adam(self.actor.parameters(),lr=LR)
 
         self.critic = Critic(state_dim, action_dim).to(device)
         self.critic_target = Critic(state_dim, action_dim).to(device)
         self.critic_target.load_state_dict(self.critic.state_dict())
-        self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=LR)
+        self.critic_optimizer = torch.optim.Adam(self.critic.parameters(),lr=LR)
 
         self.max_action = max_action
         self.writer = SummaryWriter()
@@ -235,7 +235,7 @@ if save_model and not os.path.exists("/home/ubuntu/Code/DRL-robot-navigation/TD3
 
 # 创建训练环境
 environment_dim = 20  # 观测环境的维度
-robot_dim = 4  # 机器人状态维度
+robot_dim = 6  # 机器人状态维度
 env = GazeboEnv("wheeltec_senior_akm.launch", environment_dim)  # 启动仿真环境
 time.sleep(5)  # 等待 5 秒以确保环境稳定
 

@@ -422,7 +422,7 @@ class GazeboEnv:
 
         # 设置 Marker 的参考坐标系
         marker.header.frame_id = "odom"
-        marker.type = Marker.CUBE # 目标点用圆柱体表示
+        marker.type = marker.CYLINDER  # 目标点用圆柱体表示
         marker.action = marker.ADD
 
         marker.pose.position.x = 0.0
@@ -438,10 +438,10 @@ class GazeboEnv:
         marker.scale.y = 1
         marker.scale.z = 0.02
 
-        #表示目标点
-        marker.color.a = 0.5
-        marker.color.r = 1.0
-        marker.color.g = 0.0
+        # 绿色 (G=1) 表示目标点
+        marker.color.a = 1.0
+        marker.color.r = 0.0
+        marker.color.g = 1.0
         marker.color.b = 0.0
 
         # 目标点的位置
@@ -527,13 +527,12 @@ class GazeboEnv:
             return -200.0
         else:
             r1 = lambda x: 0 if x < 0 else x
-            r2 = lambda x: 0 if x < 0.5 else 0.5
+            r2 = lambda x: 0 if x < 0.5 else 0.5 - x9
             r3 = lambda x: 0 if x < 1 else - x / 2
-            r4 = lambda x: -2 ** (0.6/x) if x < 1 else 0.0
+            r4 = lambda x: -2 ** (1/x) if x < 1 else 0.0
             r5 = lambda x: abs(x) if np.pi / 2 > x > -np.pi / 2 else abs(x) - np.pi / 2
             # return r1(action[0]) - abs(action[1]) / 2 - r3(min_laser) / 2
             # return abs(action[0]) / 2 - abs(action[1]) / 2 - r3(min_laser) / 2
             # return r1(action[0]) / 2 + r2(abs(theta) / math.pi) - r3(min_laser) / 2
             # return action[0] + r2(abs(theta) / math.pi) - r4(min_laser) / 2 + r3(distance) / 2 # 效果还行 5分
-            return -abs(angle)  + r4(min_laser) - distance
-        
+            return -r5(angle)  + r4(min_laser) - distance
